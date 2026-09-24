@@ -1,0 +1,1023 @@
+GUIA DE ESTUDO — ESTRUTURA DE UM PROJETO SPRING BOOT
+Baseado no projeto TseViewer enviado e na explicação anterior.
+
+============================================================
+1. VISÃO GERAL
+============================================================
+
+O projeto é uma aplicação Spring Boot + Maven + Thymeleaf.
+
+Estrutura principal:
+
+TseViewer
+|
++-- src
+|   +-- main
+|       +-- java
+|       |   +-- com.emanuel.TseViewer
+|       |       +-- application
+|       |       +-- controller
+|       |       +-- model
+|       |       +-- service
+|       |
+|       +-- resources
+|           +-- data
+|           +-- static
+|           +-- templates
+|
++-- pom.xml
+
+Fluxo principal:
+
+NAVEGADOR
+    |
+    v
+CONTROLLER
+    |
+    v
+SERVICE
+    |
+    v
+MODEL / DADOS
+    |
+    v
+CONTROLLER
+    |
+    v
+THYMELEAF
+    |
+    v
+HTML
+    |
+    v
+NAVEGADOR
+
+
+============================================================
+2. src/main/java
+============================================================
+
+É a parte do projeto onde fica o código Java.
+
+No projeto do Emanuel:
+
+java
++-- com.emanuel.TseViewer
+    +-- application
+    +-- controller
+    +-- model
+    +-- service
+
+Essas pastas organizam as responsabilidades do sistema.
+
+
+============================================================
+3. application
+============================================================
+
+Contém a classe principal da aplicação:
+
+TseViewerApplication.java
+
+Ela é a porta de entrada do Spring Boot.
+
+Normalmente possui:
+
+@SpringBootApplication
+public class TseViewerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(TseViewerApplication.class, args);
+    }
+}
+
+Quando essa classe é executada, o Spring Boot inicia a aplicação.
+
+Normalmente a aplicação fica disponível em:
+
+http://localhost:8080
+
+IMPORTANTE:
+
+A classe principal normalmente fica em um pacote acima das outras classes:
+
+com.emanuel.TseViewer
+|
++-- application
++-- controller
++-- model
++-- service
+
+Isso permite que o Spring encontre automaticamente as classes dentro desses pacotes.
+
+
+============================================================
+4. CONTROLLER
+============================================================
+
+No projeto:
+
+controller
++-- CandidatoController.java
+
+O Controller recebe as requisições do navegador.
+
+Exemplo conceitual:
+
+@Controller
+public class CandidatoController {
+
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+}
+
+Significado:
+
+Quando alguém acessar:
+
+http://localhost:8080/
+
+o Controller recebe a requisição e retorna a view chamada "index".
+
+return "index";
+
+faz referência a:
+
+src/main/resources/templates/index.html
+
+IMPORTANTE:
+
+@Controller é usado quando queremos retornar uma página/view.
+
+@RestController é usado principalmente para APIs que retornam dados, como JSON.
+
+Em aplicações com Thymeleaf, normalmente usamos @Controller.
+
+
+============================================================
+5. SERVICE
+============================================================
+
+No projeto:
+
+service
++-- CandidatoService.java
+
+O Service contém a lógica da aplicação.
+
+Por exemplo:
+
+- carregar dados;
+- pesquisar;
+- filtrar;
+- ordenar;
+- tratar informações.
+
+O Controller não deve fazer toda a lógica sozinho.
+
+A ideia é:
+
+Controller
+    |
+    | chama
+    v
+Service
+    |
+    | executa a lógica
+    v
+dados
+
+Exemplo conceitual:
+
+@Service
+public class CandidatoService {
+
+    public List<Candidato> listarCandidatos() {
+        // lógica para buscar candidatos
+        return candidatos;
+    }
+}
+
+E o Controller pode chamar:
+
+List<Candidato> candidatos = service.listarCandidatos();
+
+No projeto dos candidatos, o Service é responsável por carregar o CSV e realizar os filtros.
+
+
+============================================================
+6. MODEL
+============================================================
+
+No projeto:
+
+model
++-- Candidato.java
+
+O Model representa uma entidade/dado do sistema.
+
+No caso desse projeto, a entidade é:
+
+Candidato
+
+Ela possui informações como:
+
+- nome;
+- número;
+- cargo;
+- partido;
+- UF;
+- município;
+- situação;
+- gênero;
+- escolaridade;
+- ocupação;
+- data de nascimento.
+
+Exemplo simplificado:
+
+public class Candidato {
+
+    private String nome;
+    private String numero;
+    private String partido;
+    private String cargo;
+
+}
+
+A ideia é transformar os dados em objetos Java.
+
+Por exemplo:
+
+Uma linha do CSV
+        |
+        v
+Candidato
+        |
+        +-- nome
+        +-- número
+        +-- partido
+        +-- cargo
+
+
+============================================================
+7. resources
+============================================================
+
+Dentro de:
+
+src/main/resources
+
+ficam arquivos utilizados pela aplicação.
+
+No projeto:
+
+resources
++-- data
++-- static
++-- templates
++-- application.properties
+
+
+============================================================
+8. data
+============================================================
+
+No projeto:
+
+data
++-- candidatos
+    +-- consulta_cand_2026_MG.csv
+
+Esse arquivo é a fonte de dados.
+
+O Service lê o CSV e transforma cada linha em um objeto Candidato.
+
+Fluxo:
+
+CSV
+ |
+ v
+Service
+ |
+ v
+Candidato
+ |
+ v
+Controller
+ |
+ v
+HTML
+
+
+============================================================
+9. static
+============================================================
+
+No projeto:
+
+static
++-- images
++-- index.css
+
+A pasta static contém arquivos estáticos que o navegador pode acessar.
+
+Exemplos:
+
+- CSS;
+- imagens;
+- JavaScript;
+- outros arquivos estáticos.
+
+Uma organização recomendada:
+
+static
++-- css
+|   +-- style.css
+|
++-- images
+    +-- ...
+
+Se existir:
+
+static/images/candidato.jpg
+
+o HTML pode acessar a imagem usando um caminho como:
+
+/images/candidato.jpg
+
+IMPORTANTE:
+
+O caminho utilizado no HTML precisa corresponder ao local real do arquivo.
+
+
+============================================================
+10. templates
+============================================================
+
+No projeto:
+
+templates
++-- index.html
+
+Essa é a página que será exibida ao usuário.
+
+Fluxo:
+
+Controller
+    |
+    v
+return "index"
+    |
+    v
+templates/index.html
+
+
+============================================================
+11. THYMELEAF
+============================================================
+
+Thymeleaf permite que o HTML receba dados vindos do Java.
+
+Por exemplo, no Controller:
+
+model.addAttribute("candidatos", candidatos);
+
+Isso cria uma informação chamada:
+
+candidatos
+
+disponível para o HTML.
+
+No HTML podemos fazer:
+
+<div th:each="candidato : ${candidatos}">
+    <p th:text="${candidato.nome}"></p>
+    <p th:text="${candidato.partido}"></p>
+</div>
+
+Significado:
+
+Para cada candidato recebido do Java, criar uma parte da página.
+
+Fluxo:
+
+List<Candidato>
+       |
+       v
+     Model
+       |
+       v
+   Thymeleaf
+       |
+       v
+      HTML
+
+
+============================================================
+12. application.properties
+============================================================
+
+Arquivo usado para configurações do Spring Boot.
+
+Por exemplo:
+
+server.port=8081
+
+Nesse caso, a aplicação seria acessada em:
+
+http://localhost:8081
+
+Se não houver alteração, normalmente:
+
+http://localhost:8080
+
+Para atividades simples, pode ser que quase nenhuma configuração seja necessária.
+
+
+============================================================
+13. pom.xml
+============================================================
+
+O pom.xml é o arquivo de configuração do Maven.
+
+Ele define:
+
+- informações do projeto;
+- versão do Java;
+- dependências;
+- plugins;
+- configurações do Maven.
+
+Exemplo de dependência do Spring Web:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+Dependência do Thymeleaf:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
+Para leitura de CSV, o projeto utiliza OpenCSV:
+
+<dependency>
+    <groupId>com.opencsv</groupId>
+    <artifactId>opencsv</artifactId>
+    <version>...</version>
+</dependency>
+
+O projeto de candidatos utiliza:
+
+- OpenCSV para ler o CSV;
+- Spring Web para Controller, rotas e servidor;
+- Thymeleaf para renderizar o HTML.
+
+
+============================================================
+14. target
+============================================================
+
+No projeto aparece:
+
+target
++-- classes
++-- generated-sources
++-- generated-test-sources
++-- maven-status
++-- surefire-reports
++-- test-classes
+
+Essa pasta é gerada pelo Maven durante a compilação/execução.
+
+Normalmente NÃO precisa ser versionada no Git.
+
+Se for apagada, o Maven pode recriá-la.
+
+Portanto:
+
+target -> NÃO precisa colocar no Git.
+
+
+============================================================
+15. .idea
+============================================================
+
+A pasta:
+
+.idea
+
+é relacionada às configurações do IntelliJ IDEA.
+
+Normalmente não é necessário versioná-la.
+
+Portanto:
+
+.idea -> normalmente NÃO versionar.
+
+
+============================================================
+16. .mvn
+============================================================
+
+A pasta:
+
+.mvn
+
+faz parte do Maven Wrapper.
+
+Também aparecem:
+
+mvnw
+mvnw.cmd
+
+Eles permitem executar o Maven utilizando a configuração do próprio projeto.
+
+No Windows:
+
+mvnw.cmd spring-boot:run
+
+No Linux/macOS:
+
+./mvnw spring-boot:run
+
+Normalmente:
+
+.mvn       -> manter
+mvnw       -> manter
+mvnw.cmd   -> manter
+
+
+============================================================
+17. HELP.md
+============================================================
+
+HELP.md normalmente é um arquivo gerado pelo Spring Initializr com informações de ajuda.
+
+Não é essencial para a aplicação.
+
+Pode ser mantido, mas não é uma parte fundamental do funcionamento.
+
+
+============================================================
+18. .gitignore
+============================================================
+
+O .gitignore informa ao Git quais arquivos/pastas não devem ser enviados para o repositório.
+
+Exemplos comuns:
+
+target/
+.idea/
+*.class
+
+É importante manter o .gitignore.
+
+
+============================================================
+19. .gitattributes
+============================================================
+
+O .gitattributes define algumas regras de comportamento do Git, como tratamento de arquivos e quebras de linha.
+
+Pode ser mantido.
+
+Não é necessário dominar esse arquivo para entender Spring Boot.
+
+
+============================================================
+20. TESTES
+============================================================
+
+O projeto possui:
+
+src
++-- test
+    +-- java
+        +-- com.emanuel.TseViewer
+            +-- TseViewerApplicationTests.java
+
+Essa pasta é usada para testes automatizados.
+
+Um teste simples pode verificar se o contexto da aplicação consegue iniciar.
+
+Para começar:
+
+test -> pode manter.
+
+Se a atividade não exigir testes, provavelmente não será necessário criar vários testes.
+
+
+============================================================
+21. ESTRUTURA RECOMENDADA PARA UM PROJETO DESSE TIPO
+============================================================
+
+MeuProjeto
+|
++-- src
+|   +-- main
+|   |   +-- java
+|   |   |   +-- com.exemplo.meuprojeto
+|   |   |       |
+|   |   |       +-- application
+|   |   |       |   +-- MeuProjetoApplication.java
+|   |   |       |
+|   |   |       +-- controller
+|   |   |       |   +-- MeuController.java
+|   |   |       |
+|   |   |       +-- model
+|   |   |       |   +-- MeuModel.java
+|   |   |       |
+|   |   |       +-- service
+|   |   |           +-- MeuService.java
+|   |   |
+|   |   +-- resources
+|   |       |
+|   |       +-- data
+|   |       |   +-- dados.csv
+|   |       |
+|   |       +-- static
+|   |       |   +-- css
+|   |       |   |   +-- style.css
+|   |       |   |
+|   |       |   +-- images
+|   |       |
+|   |       +-- templates
+|   |       |   +-- index.html
+|   |       |
+|   |       +-- application.properties
+|   |
+|   +-- test
+|
++-- .gitignore
++-- pom.xml
++-- mvnw
++-- mvnw.cmd
+
+
+============================================================
+22. O QUE PRECISA SER DECORADO?
+============================================================
+
+Não decore nomes específicos como:
+
+CandidatoController
+CandidatoService
+Candidato
+
+Decore o PADRÃO:
+
+APPLICATION
+    |
+    v
+CONTROLLER
+    |
+    v
+SERVICE
+    |
+    v
+MODEL
+
+
+E:
+
+resources
++-- data
++-- static
++-- templates
+
+
+============================================================
+23. ANOTAÇÕES IMPORTANTES
+============================================================
+
+@SpringBootApplication
+
+Informa que a classe é a principal aplicação Spring Boot.
+
+@Controller
+
+Indica uma classe responsável por receber requisições e retornar views.
+
+@Service
+
+Indica uma classe que contém lógica de negócio/serviço.
+
+@GetMapping("/")
+
+Define uma rota HTTP GET.
+
+@RequestParam
+
+Recebe parâmetros enviados pela URL.
+
+Model
+
+Permite enviar dados do Controller para o Thymeleaf.
+
+
+============================================================
+24. PRINCIPAIS COMANDOS E IDEIAS DO THYMELEAF
+============================================================
+
+th:text
+
+Exibe texto vindo do Java.
+
+Exemplo:
+
+<p th:text="${candidato.nome}"></p>
+
+
+th:each
+
+Repete um elemento para cada item de uma lista.
+
+Exemplo:
+
+<div th:each="candidato : ${candidatos}">
+    ...
+</div>
+
+
+th:if
+
+Mostra um elemento somente quando uma condição é verdadeira.
+
+
+th:href
+
+Usado para criar links/caminhos utilizando Thymeleaf.
+
+
+th:src
+
+Usado para definir o caminho de imagens utilizando Thymeleaf.
+
+
+============================================================
+25. COMO AS "CONEXÕES" FUNCIONAM
+============================================================
+
+Não é necessariamente uma conexão com banco de dados.
+
+A conexão principal é entre as camadas da aplicação.
+
+NAVEGADOR
+    |
+    | HTTP
+    v
+CONTROLLER
+    |
+    | chama
+    v
+SERVICE
+    |
+    | trabalha com
+    v
+MODEL / DADOS
+    |
+    | retorna
+    v
+CONTROLLER
+    |
+    | coloca no Model
+    v
+THYMELEAF
+    |
+    v
+HTML
+
+
+============================================================
+26. EXEMPLO DE FLUXO COM PRODUTOS
+============================================================
+
+Imagine uma atividade que peça:
+
+"Faça uma aplicação que mostre produtos e permita pesquisar pelo nome."
+
+Você poderia ter:
+
+Produto.java
+
+Representa:
+
+Produto
++-- nome
++-- preco
++-- categoria
+
+
+ProdutoService.java
+
+Responsável por:
+
+- carregar produtos;
+- listar produtos;
+- pesquisar produtos;
+- filtrar produtos.
+
+
+ProdutoController.java
+
+Recebe:
+
+GET /
+GET /?nome=celular
+
+Chama o ProdutoService.
+
+
+index.html
+
+Recebe os produtos através do Thymeleaf.
+
+
+style.css
+
+Cuida da aparência.
+
+
+Fluxo:
+
+Navegador
+    |
+    v
+ProdutoController
+    |
+    v
+ProdutoService
+    |
+    v
+List<Produto>
+    |
+    v
+Model
+    |
+    v
+Thymeleaf
+    |
+    v
+index.html
+
+
+============================================================
+27. COMO RODAR A APLICAÇÃO
+============================================================
+
+Uma forma é executar a classe principal:
+
+TseViewerApplication.java
+
+Ela contém o método main e a anotação:
+
+@SpringBootApplication
+
+
+Outra forma é usar o Maven Wrapper.
+
+Windows:
+
+mvnw.cmd spring-boot:run
+
+Linux/macOS:
+
+./mvnw spring-boot:run
+
+
+Depois abrir:
+
+http://localhost:8080
+
+
+============================================================
+28. O QUE MANTER E O QUE NORMALMENTE NÃO PRECISA MANTER
+============================================================
+
+MANTER:
+
+src/
+pom.xml
+.mvn/
+mvnw
+mvnw.cmd
+.gitignore
+.gitattributes
+
+Também manter os arquivos necessários da aplicação:
+
+- classes Java;
+- CSV;
+- HTML;
+- CSS;
+- imagens;
+- application.properties.
+
+
+NORMALMENTE NÃO PRECISA VERSIONAR:
+
+target/
+.idea/
+arquivos compilados;
+arquivos temporários.
+
+
+============================================================
+29. REGRA DE OURO
+============================================================
+
+Quando estiver fazendo uma atividade, faça estas perguntas:
+
+1. O navegador pediu alguma coisa.
+   Quem recebe?
+   -> Controller.
+
+2. Preciso fazer alguma lógica.
+   Quem faz?
+   -> Service.
+
+3. Preciso representar uma entidade/dado.
+   Quem representa?
+   -> Model.
+
+4. Preciso mostrar o resultado.
+   Quem mostra?
+   -> Thymeleaf + HTML.
+
+5. Preciso deixar a página bonita.
+   Quem cuida?
+   -> CSS.
+
+6. Preciso carregar dados.
+   De onde?
+   -> CSV, banco de dados ou outra fonte definida pela atividade.
+
+
+============================================================
+30. RESUMO FINAL
+============================================================
+
+APPLICATION
+    -> inicia o Spring Boot.
+
+CONTROLLER
+    -> recebe requisições HTTP.
+
+SERVICE
+    -> executa a lógica.
+
+MODEL
+    -> representa os dados.
+
+RESOURCES/DATA
+    -> guarda arquivos de dados, como CSV.
+
+RESOURCES/STATIC
+    -> guarda CSS, imagens e outros arquivos estáticos.
+
+RESOURCES/TEMPLATES
+    -> guarda páginas HTML com Thymeleaf.
+
+THYMELEAF
+    -> conecta os dados Java ao HTML.
+
+POM.XML
+    -> configura o Maven e as dependências.
+
+TARGET
+    -> arquivos gerados pelo Maven; normalmente não versionar.
+
+GITIGNORE
+    -> define o que o Git deve ignorar.
+
+MAVEN WRAPPER
+    -> mvnw e mvnw.cmd permitem executar o Maven pelo projeto.
+
+
+============================================================
+FRASE PARA MEMORIZAR
+============================================================
+
+"Controller recebe, Service processa, Model representa,
+Thymeleaf mostra."
+
+E a estrutura mental:
+
+NAVEGADOR
+   ↓
+CONTROLLER
+   ↓
+SERVICE
+   ↓
+MODEL/DADOS
+   ↓
+MODEL DO THYMELEAF
+   ↓
+HTML
