@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidatos - Eleições 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body class="w-full h-screen">
+
+    <header class="p-7 w-full bg-emerald-800 flex justify-between items-center gap-1">
+        <h1 class="text-3xl font-semibold text-zinc-100">Candidatos Viewer</h1>
+        <span class="flex gap-4 items-center">
+            <h2 class="text-zinc-200 text-lg font-semibold">Eleições 2026</h2>
+            <h3 class="text-zinc-300 text-ms">Minas Gerais</h3>
+        </span>
+    </header>
+
+    <section class="p-8">
+
+        <div class="mb-8 flex flex-col gap-1">
+            <h4 class="text-xl font-semibold">Lista de Candidatos</h4>
+            <p class="text-zinc-700">Visualize as principais informações sobre os candidatos políticos de 2026.</p>
+        </div>
+
+        <form method="get" th:action="@{/}" class="bg-zinc-100 p-8 px-9 rounded-lg flex gap-8">
+            <input placeholder="Vladmir..." type="text" name="texto" th:value="${texto}" class="border-1 w-[20rem] focus:border-zinc-400 transition-all bg-transparent border-zinc-300 px-4 p-3     outline-none rounded-lg">
+
+            <div class="flex gap-4">
+                <select name="cargo" class="p-2 rounded-lg text-zinc-800 font-medium">
+                    <option value="" th:selected="${cargo == ''}">Todos</option>
+                    <option th:each="c : ${cargosLista}"
+                            th:value="${c}"
+                            th:text="${c}"
+                            th:selected="${c == cargo}">
+                    </option>
+                </select>
+                <select name="partido" class="p-2 rounded-lg text-zinc-800 font-medium">
+                    <option value="" th:selected="${partido == ''}">Todos</option>
+                    <option th:each="p : ${partidosLista}"
+                            th:value="${p}"
+                            th:text="${p}"
+                            th:selected="${p == partido}">
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="bg-emerald-800 cursor-pointer text-zinc-50 font-semibold p-2 px-5 outline-none rounded-lg">Confirmar</button>
+        </form>
+
+        <div class="grid grid-cols-6">
+            <div class="border-1 border-zinc-400 rounded-lg w-[15rem] p-2" th:each="cand : ${candidatos}">
+                <img th:src="@{'/images/candidatos/' + ${cand.nomeArquivoFoto}}"
+                     th:alt="${cand.nomeUrna}" class="w-[15rem] h-[14rem] rounded-sm">
+
+                <p class="font-bold text-emerald-800 text-lg" th:if="${cand.nomeUrna != null}" th:text="${cand.nomeUrna.toUpperCase()}">Nome</p>
+                <span class="flex gap-2">
+                    <p class="font-semibold bg-zinc-200 rounded-lg w-max p-2 px-3 text-[0.9rem]" th:if="${cand.nrCandidato != null}" th:text="${cand.nrCandidato}">Número</p>
+                    <p class="font-medium bg-zinc-200 rounded-lg w-max p-2 px-3 text-[0.9rem]" th:if="${cand.siglaPartido != null}" th:text="${cand.siglaPartido}">Partido</p>
+                </span>
+                <p class="font-medium" th:if="${cand.cargo != null}" th:text="${cand.cargo.toUpperCase()}">Cargo</p>
+                <p class="font-medium" th:if="${cand.uf != null}" th:text="${cand.uf}">UF</p>
+                <p class="font-medium" th:if="${cand.dtNascimento != null}" th:text="${cand.dtNascimento}">Nascimento</p>
+                <p class="font-medium" th:if="${cand.ocupacao != null}" th:text="${cand.ocupacao}">Ocupação</p>
+                <p class="font-medium" th:if="${cand.grauInstrucao != null}" th:text="${cand.grauInstrucao}">Grau Instrução</p>
+                <p class="font-medium" th:if="${cand.nomeCandidato != null}" th:text="${cand.nomeCandidato}">Nome Urna</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
